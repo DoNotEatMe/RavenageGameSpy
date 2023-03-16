@@ -244,9 +244,7 @@ int main()
 
         readBuffer.clear();
         
-            cURLingAppid(readBuffer, appid_clean);
-            count++;
-            std::cout << count << std::endl;
+        cURLingAppid(readBuffer, appid_clean);
         
         rapidjson::Document document;
         document.Parse(readBuffer.c_str());
