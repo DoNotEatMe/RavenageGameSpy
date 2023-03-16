@@ -16,7 +16,7 @@ Your install file may require `libcurl.dll`. You could take it from `out/build/x
 
 To use RavenageGameSpy, follow these steps:
 
-0. Download files from `Shipped release` dir.
+0. Download files from `/Shipped release/` dir.
 1. Ensure you have `appid.csv` file in the root directory of the program.
 2. The `appid.csv` file must contain Steam game appids, with one appid per line.
 3. Ensure that there are no empty lines in the `appid.csv` file.
