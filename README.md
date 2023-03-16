@@ -4,11 +4,13 @@ This is version 1 of RavenageGameSpy, an unoptimized C++ console application tha
 
 ## Prerequisites
 
-Before running RavenageGameSpy, ensure that the following prerequisites are met:
+Before using raw code of RavenageGameSpy, ensure that the following prerequisites are met:
 
 - You have the `vcpkg` package manager installed on your system.
-- You have installed the `vcpkg/curl` and `vcpkg/rapidjson` packages using `vcpkg`.
+- You have installed the `curl` and `rapidjson` packages using `vcpkg`.
 - If you need to change the `vcpkg` path, you can do so in the `CMakelists.txt` file.
+
+Your install file may require `libcurl.dll`. You could take it from `out/build/x64-release/`
 
 ## Usage
 
