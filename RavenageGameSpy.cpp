@@ -31,7 +31,8 @@ static size_t write_callback(char* ptr, size_t size, size_t nmemb, std::string* 
 }
 
 
-
+// unused
+/*
 void cURLingGS(std::string& readBuffer, std::string& spreadsheet_id) {
 
     // Set up the cURL library.
@@ -72,9 +73,10 @@ void cURLingGS(std::string& readBuffer, std::string& spreadsheet_id) {
             while (awake != 1) {
 
                 int awake_in = 1;
-                std::chrono::milliseconds sleepDuration(6000000000);
-                std::this_thread::sleep_for(sleepDuration);
-                std::cout << "Sleep for 1 min" << std::endl;
+                std::cout << "Error 429: Too many requests" << std::endl;
+                std::cout << "Sleep for 30s" << std::endl;
+                std::chrono::milliseconds duration(30000);
+                std::this_thread::sleep_for(duration);
                 awake++;
             }
 
@@ -89,6 +91,7 @@ void cURLingGS(std::string& readBuffer, std::string& spreadsheet_id) {
     // Clean up the cURL library.
     curl_easy_cleanup(curl);
 }
+*/
 
 void cURLingAppid(std::string& readBuffer, std::string appid) {
 
@@ -101,10 +104,7 @@ void cURLingAppid(std::string& readBuffer, std::string appid) {
         return;
     }
 
-
     std::string url = "https://store.steampowered.com/api/appdetails?appids=" + appid + "&cc=US";
-
-
 
     curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
     curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
@@ -125,8 +125,6 @@ void cURLingAppid(std::string& readBuffer, std::string appid) {
     else {
 
         if (response_code == 429) {
-
-
 
             int awake = 0;
             while (awake != 1) {
@@ -163,10 +161,7 @@ void cURLingReviews(std::string& readBuffer, std::string appid) {
         return;
     }
 
-
     std::string url = "https://store.steampowered.com/appreviews/" + appid + "?json=1&filter=recent&language=all&num_per_page=20";
-
-
 
     curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
     curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
@@ -189,13 +184,9 @@ int main()
 {
     std::cout << "Starting..." << std::endl;
 
-
     int count(0);
-    //std::string spreadsheet_id = "1bAj9n5LKInIo47_-RL1yaZr6gzIipDnZAR-LpptTswI";
+    
     std::string readBuffer;
-
-    //cURLingGS(readBuffer, spreadsheet_id);
-
 
     std::cout << "Getting appid..." << std::endl;
     std::ifstream input_file("appid.csv");
@@ -244,8 +235,6 @@ int main()
 
     std::cout << "Ok, let's go..." << std::endl;
 
-    
-
     // Process each line of data
     for (const auto& appid : lines) {
 
@@ -254,15 +243,11 @@ int main()
         appid_clean.erase(appid_clean.find_last_not_of(" \t\n\r\f\v") + 1);
 
         readBuffer.clear();
-
-
         
             cURLingAppid(readBuffer, appid_clean);
             count++;
             std::cout << count << std::endl;
         
-        
-            /*
         rapidjson::Document document;
         document.Parse(readBuffer.c_str());
 
@@ -403,7 +388,6 @@ int main()
             }
         }
 
-
         cURLingReviews(readBuffer, appid_clean);
         rapidjson::Document DocReview;
         DocReview.Parse(readBuffer.c_str());
@@ -458,7 +442,7 @@ int main()
             coming_soon + "," +
             release_date + "\n";
         count++;
-        */
+        
     }
 
     out.close();
@@ -467,7 +451,7 @@ int main()
     std::cout << "Program finished." << std::endl;
     std::cout << "Inserted: " << count << "lines in " << filename << std::endl;
     std::cout << "Press any key to exit." << std::endl;
-    std::cin.get(); // Wait for user input
+    std::cin.get(); 
 
     return 0;
 }
