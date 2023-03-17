@@ -5,7 +5,6 @@
 #include <sstream>
 #include <vector>
 #include <iomanip>
-#include <sstream>
 #include <ctime>
 #include <Windows.h>
 #include <chrono>
@@ -13,6 +12,7 @@
 #include <rapidjson/document.h>
 #include <filesystem>
 #include <thread>
+
 
 std::vector<std::string> split_string(const std::string& str, char delimiter) {
     std::vector<std::string> tokens;
@@ -130,9 +130,9 @@ void cURLingAppid(std::string& readBuffer, std::string appid) {
             while (awake != 1) {
 
                 int awake_in = 1;
-                std::cout << "Error 429: Too many requests" << std::endl;
-                std::cout << "Sleep for 30s" << std::endl;
-                std::chrono::milliseconds duration(30000);
+                std::cout << "\rError 429: Too many requests" << std::endl;
+                std::cout << "Sleep for 1min" << std::endl;
+                std::chrono::milliseconds duration(60000);
                 std::this_thread::sleep_for(duration);
                 
                 awake++;
@@ -182,6 +182,8 @@ void cURLingReviews(std::string& readBuffer, std::string appid) {
 
 int main()
 {
+    auto start_time = std::chrono::steady_clock::now();
+
     std::cout << "Starting..." << std::endl;
 
     int count(0);
@@ -191,7 +193,7 @@ int main()
     std::cout << "Getting appid..." << std::endl;
     std::ifstream input_file("appid.csv");
     if (!input_file.is_open()) {
-        std::cerr << "Failed to open input file" << std::endl;
+        std::cerr << "Failed to open input file (appid.csv)" << std::endl;
         return 1;
     }
 
@@ -250,7 +252,7 @@ int main()
         document.Parse(readBuffer.c_str());
 
         if (!document.IsObject()) {
-            std::cout << "document.IsObject() rapidjson Assert error " << appid_clean << std::endl;
+            std::cout << "\rdocument.IsObject() rapidjson Assert error " << appid_clean << std::endl;
             
             continue;
         }
@@ -259,7 +261,7 @@ int main()
         const rapidjson::Value& success = app["success"];
 
         if (success.GetBool() == false) {
-            std::cout << "success.GetBool() == false " << appid_clean << std::endl;
+            std::cout << "\rsuccess.GetBool() == false " << appid_clean << std::endl;
             continue;
         }
 
@@ -337,6 +339,7 @@ int main()
                     coming_soon = "false";
                 }
             }
+            /*
             if (data["release_date"].HasMember("date")) {
                 if (data["release_date"]["date"].GetStringLength() != 0) {
 
@@ -384,6 +387,32 @@ int main()
 
                 }
             }
+            */
+
+            if (data["release_date"].HasMember("date")) {
+                if (data["release_date"]["date"].GetStringLength() != 0) {
+                    std::string date_str = data["release_date"]["date"].GetString();
+                    std::tm t = {};
+                    std::istringstream ss(date_str);
+                    char date_formatted[11]; // Declare the array here
+                    if (ss >> std::get_time(&t, "%d %b, %Y")) {
+                        std::strftime(date_formatted, sizeof(date_formatted), "%d/%m/%Y", &t);
+                        release_date = date_formatted; // Set the formatted date string
+                    }
+                    else {
+                        ss.clear(); // clear the fail bit
+                        ss.seekg(0, ss.beg); // reset the input stream
+                        if (ss >> std::get_time(&t, "%b %d, %Y")) {
+                            std::strftime(date_formatted, sizeof(date_formatted), "%d/%m/%Y", &t);
+                            release_date = date_formatted; // Set the formatted date string
+                        }
+                        else {
+                            release_date = date_str;
+                            
+                        }
+                    }
+                }
+            }
         }
 
         cURLingReviews(readBuffer, appid_clean);
@@ -392,12 +421,12 @@ int main()
 
 
         if (!DocReview.IsObject()) {
-            std::cout << "document.IsObject() rapidjson Assert error " << appid_clean << std::endl;
+            std::cout << "\rdocument.IsObject() rapidjson Assert error " << appid_clean << std::endl;
             continue;
         }
 
         if (DocReview["success"].GetInt() == 0) {
-            std::cout << "success.GetBool() == false " << appid_clean << std::endl;
+            std::cout << "\rsuccess.GetBool() == false " << appid_clean << std::endl;
             continue;
         }
 
@@ -424,11 +453,12 @@ int main()
 
         std::string steam_link = "https://store.steampowered.com/app/" + appid_clean;
 
-        out << title + "," +
+        out << 
+           '"' + title + '"' + "," +
             steam_appid + "," +
             steam_link + "," +
-            developers + "," +
-            publishers + "," +
+            '"'+ developers + '"' + "," +
+            '"'+ publishers + '"'+ "," +
             price + "," +
             platforms + "," +
             metacritic_score + "," +
@@ -439,15 +469,38 @@ int main()
             rec_score + "," +
             coming_soon + "," +
             release_date + "\n";
+
         count++;
         
+        std::cout << "\r";
+        for (int i = 0; i < 50; i++) {
+            std::cout << " ";  // Print spaces to overwrite previous output
+        }
+        std::cout << "\r";
+
+        float progress = (static_cast<float>(count) / lines.size()) * 100.0;
+        std::cout << "Progress: " << static_cast<int>(progress) << "%";
+        std::cout.flush();
     }
 
     out.close();
 
+    auto end_time = std::chrono::steady_clock::now();
+    auto duration_ms = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
+    double duration_s = static_cast<double>(duration_ms.count()) / 1000;
+    
+    std::cout << "\r";
+    for (int i = 0; i < 50; i++) {
+        std::cout << " ";  // Print spaces to overwrite previous output
+    }
+    std::cout << "\r";
 
+    std::cout << std::endl;
+    std::cout << std::endl;
     std::cout << "Program finished." << std::endl;
-    std::cout << "Inserted: " << count << "lines in " << filename << std::endl;
+    std::cout << "Running time " << static_cast<int>(duration_s) << "s" << std::endl;
+    std::cout << "Avg action time " << duration_s / count << "s" << std::endl;
+    std::cout << "Inserted: " << count << "/" << lines.size() << " lines in " << filename << std::endl;
     std::cout << "Press any key to exit." << std::endl;
     std::cin.get(); 
 
