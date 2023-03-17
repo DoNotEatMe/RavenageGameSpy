@@ -339,56 +339,7 @@ int main()
                     coming_soon = "false";
                 }
             }
-            /*
-            if (data["release_date"].HasMember("date")) {
-                if (data["release_date"]["date"].GetStringLength() != 0) {
-
-                    std::string date_str = data["release_date"]["date"].GetString();
-
-                    std::tm date = {};
-                    std::istringstream ss(date_str);
-
-                    // Parse the date string into a tm structure
-                    if ((date_str.size() == 12 || date_str.size() == 11) && date_str != "Coming soon") {
-                        ss >> std::get_time(&date, "%b %d, %Y");
-                        // Check for errors
-                        if (ss.fail()) {
-                            std::cout << appid_clean << std::endl;
-                            std::cout << "Error parsing date string: " << date_str << std::endl;
-                            return 1;
-                        }
-
-                        // Format the date as a string in dd/mm/yyyy format
-                        char date_formatted[11];
-                        std::strftime(date_formatted, sizeof(date_formatted), "%d/%m/%Y", &date);
-
-                        // Print the formatted date string
-                        release_date = date_formatted;
-                    }
-                    else if (date_str.size() == 9) {
-                        ss >> std::get_time(&date, "%b %Y");
-                        // Check for errors
-                        if (ss.fail()) {
-                            std::cout << appid_clean << std::endl;
-                            std::cout << "Error parsing date string: " << date_str << std::endl;
-                            return 1;
-                        }
-
-                        // Format the date as a string in dd/mm/yyyy format
-                        char date_formatted[11];
-                        std::strftime(date_formatted, sizeof(date_formatted), "%d/%m/%Y", &date);
-
-                        // Print the formatted date string
-                        release_date = date_formatted;
-                    }
-                    else {
-                        release_date = date_str;
-                    }
-
-                }
-            }
-            */
-
+            
             if (data["release_date"].HasMember("date")) {
                 if (data["release_date"]["date"].GetStringLength() != 0) {
                     std::string date_str = data["release_date"]["date"].GetString();
