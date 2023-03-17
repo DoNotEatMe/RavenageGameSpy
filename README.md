@@ -30,7 +30,7 @@ Before using raw code of RavenageGameSpy, ensure that the following prerequisite
 - You have installed the `curl` and `rapidjson` packages using `vcpkg`.
 - If you need to change the `vcpkg` path, you can do so in the `CMakelists.txt` file.
 
-Your install file may require `libcurl.dll`. You could take it from `out/build/x64-release/`
+Your install file may require `libcurl.dll` and `zlib1.dll`. You could take it from `out/build/x64-release/`
 
 ## Alternative Sleep Functions
 
