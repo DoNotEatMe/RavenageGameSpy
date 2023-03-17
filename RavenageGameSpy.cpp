@@ -405,7 +405,7 @@ int main()
         std::string steam_link = "https://store.steampowered.com/app/" + appid_clean;
 
         out << 
-           '"' + title + '"' + "," +
+            '"' + title + '"' + "," +
             steam_appid + "," +
             steam_link + "," +
             '"'+ developers + '"' + "," +
