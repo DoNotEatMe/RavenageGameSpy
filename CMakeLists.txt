@@ -1,8 +1,8 @@
 ﻿
 cmake_minimum_required (VERSION 3.8)
 
-include("D:/vcpkg/vcpkg/scripts/buildsystems/vcpkg.cmake")
-set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -static-libgcc -static-libstdc++")
+include("D:/vcpkg/scripts/buildsystems/vcpkg.cmake")
+#set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -static-libgcc -static-libstdc++")
 
 
 
@@ -12,8 +12,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 project ("RavenageGameSpy")
 
-set(CURL_DIR D:/vcpkg/vcpkg/installed/x64-windows/share/curl/)
-set(RapidJSON_DIR D:/vcpkg/vcpkg/installed/x64-windows/share/rapidjson/)
+set(CURL_DIR D:/vcpkg/installed/x64-windows-static/share/curl/)
+set(RapidJSON_DIR D:/vcpkg/installed/x64-windows-static/share/rapidjson/)
 
 find_package(CURL CONFIG REQUIRED)
 find_package(RapidJSON CONFIG REQUIRED)
