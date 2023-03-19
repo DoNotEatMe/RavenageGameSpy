@@ -27,8 +27,7 @@ RavenageGameSpy has the following features:
 Before using raw code of RavenageGameSpy, ensure that the following prerequisites are met:
 
 - You have the `vcpkg` package manager installed on your system.
-- You have installed the `curl` and `rapidjson` packages using `vcpkg` with x64-windows-static.
-- If you need to change the `vcpkg` path, you can do so in the `CMakelists.txt` file.
+- You have installed the `curl` and `rapidjson` packages using `vcpkg` with x64-windows-static triplet.
 
 ## Alternative Sleep Functions
 
