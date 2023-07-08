@@ -1,6 +1,6 @@
 # RavenageGameSpy
 
-This is version 1 of RavenageGameSpy, an unoptimized C++ console application that utilizes `vcpkg/curl` and `vcpkg/rapidjson` libraries.
+This is an unoptimized C++ console application that utilizes `vcpkg/curl` and `vcpkg/rapidjson` libraries for parcing appid's from appid.csv and bring some additional public information to .csv
 
 ## Usage
 

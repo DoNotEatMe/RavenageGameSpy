@@ -13,85 +13,11 @@
 #include <filesystem>
 #include <thread>
 
-
-std::vector<std::string> split_string(const std::string& str, char delimiter) {
-    std::vector<std::string> tokens;
-    std::istringstream iss(str);
-    std::string line;
-    while (std::getline(iss, line, delimiter)) {
-        tokens.push_back(line);
-    }
-    return tokens;
-}
-
 static size_t write_callback(char* ptr, size_t size, size_t nmemb, std::string* data)
 {
     data->append(ptr, size * nmemb);
     return size * nmemb;
 }
-
-
-// unused
-/*
-void cURLingGS(std::string& readBuffer, std::string& spreadsheet_id) {
-
-    // Set up the cURL library.
-    CURL* curl = curl_easy_init();
-    if (!curl)
-    {
-        std::cerr << "Failed to initialize cURL" << std::endl;
-        return;
-    }
-
-    // Set the cURL options.
-    std::string url = "https://docs.google.com/spreadsheets/d/" + spreadsheet_id + "/export?format=csv&id=" + spreadsheet_id;
-    curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
-    curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
-    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_callback);
-    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
-
-    // Perform the cURL request.
-    CURLcode res = curl_easy_perform(curl);
-
-    long response_code;
-    curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &response_code);
-
-
-    if (res != CURLE_OK)
-    {
-        std::cerr << "cURLingGS failed: " << curl_easy_strerror(res) << std::endl;
-        curl_easy_cleanup(curl);
-        return;
-    }
-    else {
-
-        if (response_code == 429) {
-
-
-
-            int awake = 0;
-            while (awake != 1) {
-
-                int awake_in = 1;
-                std::cout << "Error 429: Too many requests" << std::endl;
-                std::cout << "Sleep for 30s" << std::endl;
-                std::chrono::milliseconds duration(30000);
-                std::this_thread::sleep_for(duration);
-                awake++;
-            }
-
-            std::cout << "Oh sh*t, here we go again" << std::endl;
-
-            cURLingGS(readBuffer, spreadsheet_id);
-
-        }
-
-    }
-
-    // Clean up the cURL library.
-    curl_easy_cleanup(curl);
-}
-*/
 
 void cURLingAppid(std::string& readBuffer, std::string appid) {
 
@@ -144,9 +70,7 @@ void cURLingAppid(std::string& readBuffer, std::string appid) {
 
         }
 
-    }
-
-    // Clean up the cURL library.
+    }   
     curl_easy_cleanup(curl);
 }
 
@@ -175,23 +99,21 @@ void cURLingReviews(std::string& readBuffer, std::string appid) {
         curl_easy_cleanup(curl);
         return;
     }
-
-    // Clean up the cURL library.
     curl_easy_cleanup(curl);
 }
 
 int main()
 {
     auto start_time = std::chrono::steady_clock::now();
+    int successCount(0);
 
     std::cout << "Starting..." << std::endl;
-
-    int count(0);
-    
+        
     std::string readBuffer;
 
     std::cout << "Getting appid..." << std::endl;
     std::ifstream input_file("appid.csv");
+    
     if (!input_file.is_open()) {
         std::cerr << "Failed to open input file (appid.csv)" << std::endl;
         return 1;
@@ -203,9 +125,8 @@ int main()
         if (line.length() > 0) {
             lines.push_back(line);
         }
+    
     }
-
-    // Close the input file
     input_file.close();
     std::cout << "Succeed!" << std::endl;
     std::cout << "Got " << lines.size() << " appids" << std::endl;
@@ -225,25 +146,20 @@ int main()
     
     std::filesystem::path subdir = "result";
     std::filesystem::create_directories(subdir);
-
     std::string filename = "data_" + date_str + ".csv";
-
     std::filesystem::path filepath = subdir / filename;
-
     std::ofstream out(filepath);
     std::cout << filename << " created" << std::endl;
     out << "title,appid,url,developers,publishers,priceUSD,platforms,metacritic score, metacritic link, total recommendations, positive recomendations, negative recommendations, review score, coming soon, release date";
     out << "\n";
 
     std::cout << "Ok, let's go..." << std::endl;
-
-    // Process each line of data
+        
     for (const auto& appid : lines) {
-
         std::string appid_clean = appid;
         appid_clean.erase(0, appid_clean.find_first_not_of(" \t\n\r\f\v"));
         appid_clean.erase(appid_clean.find_last_not_of(" \t\n\r\f\v") + 1);
-
+        
         readBuffer.clear();
         
         cURLingAppid(readBuffer, appid_clean);
@@ -253,7 +169,6 @@ int main()
 
         if (!document.IsObject()) {
             std::cout << "\rdocument.IsObject() rapidjson Assert error " << appid_clean << std::endl;
-            
             continue;
         }
 
@@ -345,17 +260,17 @@ int main()
                     std::string date_str = data["release_date"]["date"].GetString();
                     std::tm t = {};
                     std::istringstream ss(date_str);
-                    char date_formatted[11]; // Declare the array here
+                    char date_formatted[11]; 
                     if (ss >> std::get_time(&t, "%d %b, %Y")) {
                         std::strftime(date_formatted, sizeof(date_formatted), "%d/%m/%Y", &t);
-                        release_date = date_formatted; // Set the formatted date string
+                        release_date = date_formatted; 
                     }
                     else {
-                        ss.clear(); // clear the fail bit
-                        ss.seekg(0, ss.beg); // reset the input stream
+                        ss.clear();
+                        ss.seekg(0, ss.beg); 
                         if (ss >> std::get_time(&t, "%b %d, %Y")) {
                             std::strftime(date_formatted, sizeof(date_formatted), "%d/%m/%Y", &t);
-                            release_date = date_formatted; // Set the formatted date string
+                            release_date = date_formatted; 
                         }
                         else {
                             release_date = date_str;
@@ -369,7 +284,6 @@ int main()
         cURLingReviews(readBuffer, appid_clean);
         rapidjson::Document DocReview;
         DocReview.Parse(readBuffer.c_str());
-
 
         if (!DocReview.IsObject()) {
             std::cout << "\rdocument.IsObject() rapidjson Assert error " << appid_clean << std::endl;
@@ -421,15 +335,15 @@ int main()
             coming_soon + "," +
             release_date + "\n";
 
-        count++;
+        successCount++;
         
         std::cout << "\r";
         for (int i = 0; i < 50; i++) {
-            std::cout << " ";  // Print spaces to overwrite previous output
+            std::cout << " ";  
         }
         std::cout << "\r";
 
-        float progress = (static_cast<float>(count) / lines.size()) * 100.0;
+        float progress = (static_cast<float>(successCount) / lines.size()) * 100.0;
         std::cout << "Progress: " << static_cast<int>(progress) << "%";
         std::cout.flush();
     }
@@ -442,7 +356,7 @@ int main()
     
     std::cout << "\r";
     for (int i = 0; i < 50; i++) {
-        std::cout << " ";  // Print spaces to overwrite previous output
+        std::cout << " "; 
     }
     std::cout << "\r";
 
@@ -450,8 +364,8 @@ int main()
     std::cout << std::endl;
     std::cout << "Program finished." << std::endl;
     std::cout << "Running time " << static_cast<int>(duration_s) << "s" << std::endl;
-    std::cout << "Avg action time " << duration_s / count << "s" << std::endl;
-    std::cout << "Inserted: " << count << "/" << lines.size() << " lines in " << filename << std::endl;
+    std::cout << "Avg action time " << duration_s / successCount << "s" << std::endl;
+    std::cout << "Inserted: " << successCount << "/" << lines.size() << " lines in " << filename << std::endl;
     std::cout << "Press any key to exit." << std::endl;
     std::cin.get(); 
 
