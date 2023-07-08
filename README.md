@@ -1,10 +1,10 @@
-# RavenageGameSpy
+# appIDGameSpy
 
 This is an unoptimized C++ console application that utilizes `vcpkg/curl` and `vcpkg/rapidjson` libraries for parcing appid's from appid.csv and bring some additional public information to .csv
 
 ## Usage
 
-To use RavenageGameSpy, follow these steps:
+To use appIDGameSpy, follow these steps:
 
 0. Download files from `/Shipped latest release/` dir.
 1. Ensure you have `appid.csv` file in the root directory of the program.
@@ -24,7 +24,7 @@ RavenageGameSpy has the following features:
 
 ## Prerequisites for raw code
 
-Before using raw code of RavenageGameSpy, ensure that the following prerequisites are met:
+Before using raw code of appIDGameSpy, ensure that the following prerequisites are met:
 
 - You have the `vcpkg` package manager installed on your system.
 - You have installed the `curl` and `rapidjson` packages using `vcpkg` with x64-windows-static triplet.
